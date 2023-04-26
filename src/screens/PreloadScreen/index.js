@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import api from '../../services/api';
