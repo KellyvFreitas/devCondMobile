@@ -1,6 +1,6 @@
-/* eslint-disable */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../services/api';
 import {useStateValue} from '../../contexts/StateContext';
 import C from './styles';
@@ -8,53 +8,77 @@ import C from './styles';
 export default () => {
   const navigation = useNavigation();
   const [context, dispatch] = useStateValue();
-  const [cpf, setCpf] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleLoginButton = async () => {
-    if (cpf && password) {
-      let result = await api.login(cpf, password);
-      if (result.error === '') {
-        dispatch({type: 'setToken', payload: {token: result.token}});
-        dispatch({type: 'setUser', payload: {user: result.user}});
-        navigation.reset({index: 1, routes: [{name: 'ChoosePropertyScreen'}]});
-      } else {
-        alert(result.error);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkPropertySel = async () => {
+      let property = await AsyncStorage.getItem('property');
+      if (property) {
+        property.JSON.parse(property);
+        await chooseProperty(property);
       }
-    } else {
-      alert('Preencha todos os campos!');
-    }
+      setLoading(false);
+    };
+    checkPropertySel();
+  }, []);
+
+  const handleLogoutButton = async () => {
+    await api.logout();
+    navigation.reset({
+      index: 1,
+      routes: [{name: 'LoginScreen'}],
+    });
   };
 
-  const handleRegisterButton = () => {
-    navigation.navigate('RegisterScreen');
+  const chooseProperty = async property => {
+    await AsyncStorage.setItem('property', JSON.stringify(property));
+
+    dispatch({
+      type: 'setProperty',
+      payload: {
+        property,
+      },
+    });
+
+    navigation.reset({
+      index: 1,
+      routes: [{name: 'MainDrawer'}],
+    });
   };
 
   return (
     <C.Container>
-      <C.Logo
-        source={require('../../assets/logocondominio.png')}
-        resizeMode="contain"
-      />
-      <C.Field
-        placeholder="Digite seu CPF"
-        keyboardType="numeric"
-        value={cpf}
-        onChangeText={t => setCpf(t)}
-      />
-      <C.Field
-        placeholder="Digite sua Senha"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={t => setPassword(t)}
-      />
-      <C.ButtonArea onPress={handleLoginButton}>
-        <C.ButtonText>ENTRAR</C.ButtonText>
-      </C.ButtonArea>
+      <C.Scroller>
+        {loading && <C.LoadingIcon color="#8863E6" size="large" />}
+        {!loading && context.user.user.properties.length > 0 && (
+          <>
+            <C.HeadTitle>Olá {context.user.user.name}</C.HeadTitle>
+            <C.HeadTitle>Escolha uma das suas propriedades</C.HeadTitle>
 
-      <C.ButtonArea onPress={handleRegisterButton}>
-        <C.ButtonText>CADASTRAR-SE</C.ButtonText>
-      </C.ButtonArea>
+            <C.PropertyList>
+              {context.user.user.properties.map((item, index) => (
+                <C.ButtonArea key={index} onPress={() => chooseProperty(item)}>
+                  <C.ButtonText>{item.name}</C.ButtonText>
+                </C.ButtonArea>
+              ))}
+            </C.PropertyList>
+          </>
+        )}
+        {!loading && context.user.user.properties.length <= 0 && (
+          <C.BigArea>
+            <C.HeadTitle>
+              {context.user.user.name}, parabéns pelo cadastro!
+            </C.HeadTitle>
+            <C.HeadTitle>
+              Agora a administração precisa liberar seu acesso.{' '}
+            </C.HeadTitle>
+          </C.BigArea>
+        )}
+      </C.Scroller>
+      <C.ExitButtonArea onPress={handleLogoutButton}>
+        <C.ExitButtonText>Sair</C.ExitButtonText>
+      </C.ExitButtonArea>
     </C.Container>
   );
 };

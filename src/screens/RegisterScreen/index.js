@@ -1,4 +1,3 @@
-/* eslint-disable*/
 import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import C from './styles';
@@ -18,16 +17,16 @@ export default () => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Cadastra-se',
+      headerTitle: 'Cadastre-se',
     });
   }, []);
 
   const handleRegisterButton = async () => {
-    if (name && email && cpf && password && passwordConfirm) {
+    if (name && cpf && email && password && passwordConfirm) {
       let result = await api.register(
         name,
-        email,
         cpf,
+        email,
         password,
         passwordConfirm,
       );
