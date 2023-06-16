@@ -61,7 +61,7 @@ export default ({data}) => {
   return (
     <Box>
       <HeaderArea>
-        <Icon name="newspaper-0" size={30} color="#8B63E7" />
+        <Icon name="newspaper-o" size={30} color="#8B63E7" />
         <InfoArea>
           <Title>{data.title}</Title>
           <Date>{data.datecreated}</Date>
@@ -71,9 +71,9 @@ export default ({data}) => {
       <FooterArea>
         <LikeButton onPress={handleLike}>
           {liked ? (
-            <Icon name="faheart" size={17} color="ff0000" />
+            <Icon name="heart" size={17} color="#ff0102" />
           ) : (
-            <Icon name="heart-o" size={17} color="ff0000" />
+            <Icon name="heart" size={17} color="#ff0102" />
           )}
           <LikeText>
             {likeCount} Pessoa{likeCount == 1 ? '' : 's'} curti

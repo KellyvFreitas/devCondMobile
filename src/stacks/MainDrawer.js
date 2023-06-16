@@ -4,6 +4,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import WallScreen from '../screens/WallScreen';
 import DocumentScreen from '../screens/DocumentScreen';
 import DrawerCustom from '../components/DrawerCustom';
+//import BilletScreen from '../screens/BilletScreen';
 
 const Drawer = createDrawerNavigator();
 

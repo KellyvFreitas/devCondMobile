@@ -72,4 +72,9 @@ export default {
     let json = await request('get', '/docs', {}, token);
     return json;
   },
+  getBillets: async () => {
+    let token = await AsyncStorage.getItem('token');
+    let json = await request('get', '/billets', {}, token);
+    return json;
+  },
 };
